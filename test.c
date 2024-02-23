@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include <sched.h>
 
 int main() 
 {
@@ -13,6 +14,17 @@ int main()
 
     int child_nice; 
     int parent_nice = 10; // Set nice value to 10 for the parent process
+    
+    struct sched_param param;
+    param.sched_priority = 0; // This is ignores bu CFS 
+
+    // Set scheduler
+    if (sched_setscheduler(pid,9, &param) == -1) {
+        perror("sched_setscheduler");
+        return 1;
+    }
+
+
     if (setpriority(PRIO_PROCESS, pid, parent_nice) == -1) {
         perror("setpriority");
         return 1;
