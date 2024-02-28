@@ -53,7 +53,7 @@ int main()
     {
 
         parent_nice = getpriority(PRIO_PROCESS, pid);
-        wait(NULL);
+        \\wait(NULL);
 
         printf("This is the parent speaking\n"); 
         printf(" The child is %d with nice value %d with parent %d and nice value %d\n",new_proc, getpriority(PRIO_PROCESS,new_proc), pid, parent_nice);
