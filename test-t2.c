@@ -60,7 +60,7 @@ void child() {
   int real_time;
   do {
     real_time = do_work();
-    printf("donor: did %dms seconds of work\n", real_time);
+    printf("recvr: did %dms seconds of work\n", real_time);
     break;
   } while(1);
 }
