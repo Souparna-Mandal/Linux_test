@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Define the test directory
+TEST_DIR="test-ls-filter"
+mkdir -p "$TEST_DIR"
+cd "$TEST_DIR"
+
+# Function to create files and directories of various types
+create_files() {
+    mkdir -p dir
+    touch dir/file.txt
+    mkfifo dir/fifo
+    mknod dir/char_dev c 1 3
+    mknod dir/block_dev b 1 0
+    ln -s file.txt dir/symlink
+    python -c 'import socket as s; sock = s.socket(s.AF_UNIX); sock.bind("dir/socket")'
+}
+
+# Function to apply user.cw3_hide xattr and list directory contents
+test_filtering() {
+    local type=$1
+    echo "Testing with user.cw3_hide set to $type"
+    setfattr -n user.cw3_hide -v "$type" dir
+    ls -la dir/
+    # Remove the attribute for the next test
+    setfattr -x user.cw3_hide dir
+    echo "-----------------------------------"
+}
+
+# Create files and directories
+create_files
+
+# Test filtering for each file type
+types=("regular" "directory" "character" "block" "fifo" "socket" "symlink" "unknown")
+for type in "${types[@]}"; do
+    test_filtering "$type"
+done
+
+# Cleanup
+cd ..
+rm -rf "$TEST_DIR"
